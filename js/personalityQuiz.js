@@ -11,11 +11,14 @@ H5P.PersonalityQuiz = (function ($, EventDispatcher) {
 
     @memberof PersonalityQuiz
     @param {Object} params
+    @param {Object} metadata
     @param {number} id
     @constructor
   */
-  function PersonalityQuiz(params, id) {
+  function PersonalityQuiz(params, id, metadata) {
     var self = this;
+    var contentLanguage = metadata && metadata.metadata && metadata.metadata.defaultLanguage // language
+    ? metadata.metadata.defaultLanguage : 'en';
 
     self.classPrefix = 'h5p-personality-quiz-';
     self.resultAnimation = params.resultScreen.animation;
@@ -120,13 +123,23 @@ H5P.PersonalityQuiz = (function ($, EventDispatcher) {
     */
     function createButton(type, attributes) {
       var $button = $('<' + type + '>', attributes);
-
-      $button.css({
-        'border-left': '5px solid #' + params.buttonColor,
-        'background': 'linear-gradient(to right, #' + params.buttonColor + ' 50%, rgb(233, 239, 247) 50%)',
-        'background-size': '200% 100%',
-        'background-position': '100%'
-      });
+      if(contentLanguage == 'ar'){
+        // RTL Styles
+        $button.css({
+          'border-right': '5px solid #' + params.buttonColor,
+          'background': 'linear-gradient(to left, #' + params.buttonColor + ' 50%, rgb(233, 239, 247) 50%)',
+          'background-size': '200% 100%',
+          'background-position': '0%'
+        });
+      }else{
+        $button.css({
+          'border-left': '5px solid #' + params.buttonColor,
+          'background': 'linear-gradient(to right, #' + params.buttonColor + ' 50%, rgb(233, 239, 247) 50%)',
+          'background-size': '200% 100%',
+          'background-position': '100%'
+        });
+      }
+      
 
       return $button;
     }
@@ -236,13 +249,21 @@ H5P.PersonalityQuiz = (function ($, EventDispatcher) {
       var $bar, $text, text;
 
       $bar = $('<div>', { 'class': classes('progressbar') });
-
-      $bar.css({
-        'background': 'linear-gradient(to right, #' + params.progressbarColor + ' 50%, rgb(60, 62, 64) 50%)',
-        'background-size': '200% 100%',
-        'background-position': '100%'
-      });
-
+      if(contentLanguage == 'ar'){
+        // RTL Styles
+        $bar.css({
+          'background': 'linear-gradient(to left, #' + params.progressbarColor + ' 50%, rgb(60, 62, 64) 50%)',
+          'background-size': '200% 100%',
+          'background-position': '0%'
+        });
+      }else{
+        $bar.css({
+          'background': 'linear-gradient(to right, #' + params.progressbarColor + ' 50%, rgb(60, 62, 64) 50%)',
+          'background-size': '200% 100%',
+          'background-position': '100%'
+        });
+      }
+      
       $bar.hide();
 
       $text = $('<p>', { 'class': classes('progress-text') });
@@ -925,8 +946,8 @@ H5P.PersonalityQuiz = (function ($, EventDispatcher) {
       with the current question number and the question total.
     */
     self.updateProgress = function () {
-      var percentage = 100 - (self.answered) * self.slidePercentage;
-
+      var percentage = contentLanguage == 'ar' ? (self.answered) * self.slidePercentage : (100 - (self.answered) * self.slidePercentage);
+	
       var text = interpolate(self.progressText, {
         'question': self.answered + 1,
         'total': self.numQuestions
